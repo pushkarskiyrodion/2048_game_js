@@ -1,0 +1,30 @@
+{
+  "name": "2048_game_js",
+  "version": "1.0.0",
+  "homepage": "https://github.com/pushkarskiyrodion/2048_game_js.git",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "start": "webpack-dev-server --config webpack.config.js --open",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "css-loader": "^6.8.1",
+    "cssnano": "^6.0.1",
+    "gh-pages": "^5.0.0",
+    "html-webpack-plugin": "^5.5.3",
+    "mini-css-extract-plugin": "^2.7.6",
+    "postcss-loader": "^7.3.3",
+    "sass": "^1.63.6",
+    "sass-loader": "^13.3.2",
+    "style-loader": "^3.3.3",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  }
+}
