@@ -283,7 +283,7 @@ main {
 }
 
 .best {
-  color: rgba(255, 252, 249, 0.8);
+  color: var(--white-color);
 }
 
 .controls {
