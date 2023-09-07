@@ -1,0 +1,109 @@
+.game-field {
+  background: #bbada0;
+  border-spacing: 10px;
+  border-radius: 5px;
+  margin: auto;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.field-cell {
+  background: #d6cdc4;
+  width: 75px;
+  height: 75px;
+  border-radius: 5px;
+  color: #776e65;
+  text-align: center;
+  vertical-align: center;
+  user-select: none;
+
+  &--am {
+    animation: showUp 0.6s ease-out;
+  }
+
+  &--2 {
+    background: #eee4da;
+  }
+
+  &--4 {
+    background: #ede0c8;
+  }
+
+  &--8 {
+    background: #f2b179;
+    color: var(--white-color);
+  }
+
+  &--16 {
+    background: #f59563;
+    color: var(--white-color);
+  }
+
+  &--32 {
+    background: #f67c5f;
+    color: var(--white-color);
+  }
+
+  &--64 {
+    background: #f65e3b;
+    color: var(--white-color);
+  }
+
+  &--128 {
+    background: #edcf72;
+    color: var(--white-color);
+  }
+
+  &--256 {
+    background: #edcc61;
+    color: var(--white-color);
+  }
+
+  &--512 {
+    background: #edc850;
+    color: var(--white-color);
+  }
+
+  &--1024 {
+    background: #edc53f;
+    color: var(--white-color);
+  }
+
+  &--2048 {
+    background: #edc22e;
+    color: var(--white-color);
+  }
+
+  &--4096 {
+    background: #ecbf2c;
+    color: var(--white-color);
+  }
+
+  &--8192 {
+    background: #eabd29;
+    color: var(--white-color);
+  }
+
+  &--16384 {
+    background: #e4b723;
+    color: var(--white-color);
+  }
+
+  &--32768 {
+    background: #ecbd22;
+    color: var(--white-color);
+  }
+}
+
+@keyframes showUp {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
+}
