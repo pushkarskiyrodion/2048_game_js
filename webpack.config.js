@@ -15,6 +15,14 @@ module.exports = {
         test: /\.scss$/,
         use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
       },
+      {
+        test: /\.(png|jpg|jpeg|gif|svg)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][ext][query]',
+        },
+        include: path.resolve(__dirname, 'src', 'images'),
+      },
     ],
   },
   plugins: [
