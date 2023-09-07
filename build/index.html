@@ -11,59 +11,54 @@
     >
   <script defer src="bundle.js"></script><link href="styles.css" rel="stylesheet"></head>
   <body>
-    <div class="container">
-      <div class="game-header">
-        <h1>2048</h1>
-
+    <main>
+      <div class="game-header" id="header">
         <div class="controls">
-          <p class="info">
-            Score: <span class="game-score">0</span>
+          <div class="wrap">
+            <div class="wrapper">
+              <div class="dropdown" data-value="3">3x3</div>
+              <div class="dropdown__item" data-value="4">4x4</div>
+              <div class="dropdown__item" data-value="5">5x5</div>
+              <div class="dropdown__item" data-value="6">6x6</div>
+              <div class="dropdown__item" data-value="7">7x7</div>
+            </div>
+          </div>
+  
+          <h1>2048</h1>
+        </div>
+  
+        <div class="controls">
+          <p class="info best">
+            Record: <span class="score score__best">0</span>
           </p>
 
+          <p class="info">
+            Score: <span class="score game-score">0</span>
+          </p>
+  
           <button class="button start">Start</button>
         </div>
       </div>
+      
+      <div class="container">
+        <table class="game-field">
+          <tbody>
+          </tbody>
+        </table>
+      </div>
 
-      <table class="game-field">
-        <tbody>
-          <tr class="field-row">
-            <td class="field-cell"></td>
-            <td class="field-cell"></td>
-            <td class="field-cell"></td>
-            <td class="field-cell"></td>
-          </tr>
-
-          <tr class="field-row">
-            <td class="field-cell"></td>
-            <td class="field-cell"></td>
-            <td class="field-cell"></td>
-            <td class="field-cell"></td>
-          </tr>
-
-
-          <tr class="field-row">
-            <td class="field-cell"></td>
-            <td class="field-cell"></td>
-            <td class="field-cell"></td>
-            <td class="field-cell"></td>
-          </tr>
-
-
-          <tr class="field-row">
-            <td class="field-cell"></td>
-            <td class="field-cell"></td>
-            <td class="field-cell"></td>
-            <td class="field-cell"></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="help-wrapper">
+        <div class="help">
+          <img src="images/icons8-help-100.png" alt="help">
+        </div>
+      </div>
 
       <div class="message-container">
         <p class="message message-lose hidden">You lose! Restart the game?</p>
         <p class="message message-win hidden">Winner! Congrats! You did it!</p>
         <p class="message message-start">Press "Start" to begin game. Good luck!</p>
       </div>
-    </div>
+    </main>
     <script type="text/javascript" src="scripts/main.js"></script>
   </body>
 </html>

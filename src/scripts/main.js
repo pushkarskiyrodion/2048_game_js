@@ -1,366 +1,316 @@
 'use strict';
 
 import '../styles/main.scss';
+import './help';
 
-const offset = require('./offsetConfig');
-const directions = require('./directionsConfig');
-
-const everySquare = Array.from(document.querySelectorAll('.field-cell'));
-const everyRow = Array.from(document.querySelectorAll('.field-row'));
+const tbody = document.querySelector('tbody');
 const mainButton = document.querySelector('.start');
 const gameScore = document.querySelector('.game-score');
-let canMoveInAnyDirection = [];
+const dropdownValue = document.querySelector('.dropdown-value');
+const wrapper = document.querySelector('.dropdown-wrapper');
+const messageStart = document.querySelector('.message-start');
+const messageWin = document.querySelector('.message-win');
+const messageLose = document.querySelector('.message-lose');
+const bestScore = document.querySelector('.score__best');
+
+let cells = 4;
+let gameField = [];
+let recordScore = 0;
+let score = 0;
 let touchStartX = 0;
 let touchStartY = 0;
-let score = 0;
+let canMove = [];
 
-const COLUMN_LENGTH = 4;
+const getLocalStorage = () => {
+  const localField = JSON.parse(localStorage.getItem(`size ${cells}x${cells}`));
 
-function appendNumber() {
-  const emptySquares = everySquare.filter(square => square.innerHTML === '');
+  if (!localField || !localField.length) {
+    setLocalStorage(gameField, score, 0);
 
-  if (emptySquares.length === 0) {
+    return [gameField, score, 0];
+  }
+
+  return localField;
+};
+
+const setLocalStorage = (field, points, record) => {
+  localStorage.setItem(
+    `size ${cells}x${cells}`,
+    JSON.stringify([field, points, record])
+  );
+};
+
+const [, , localRecord = 0] = getLocalStorage();
+recordScore = localRecord;
+bestScore.innerHTML = localRecord;
+
+const setCellValue = (cell, value) => {
+  cell.innerHTML = value || '';
+  cell.className =
+    'field-cell' + (value ? ` field-cell--am field-cell--${value}` : '');
+};
+
+const render = () => {
+  for (let i = 0; i < cells; i++) {
+    for (let j = 0; j < cells; j++) {
+      setCellValue(tbody.children[i].children[j], gameField[i][j]);
+    }
+  }
+};
+
+const appendNum = () => {
+  const value = Math.random() > 0.9 ? 4 : 2;
+  const falseIndices = [];
+
+  for (let i = 0; i < gameField.length; i++) {
+    for (let j = 0; j < gameField[i].length; j++) {
+      if (!gameField[i][j]) {
+        falseIndices.push([i, j]);
+      }
+    }
+  }
+
+  if (falseIndices.length > 0) {
+    const randomIndex = Math.floor(Math.random() * falseIndices.length);
+    const [i, j] = falseIndices[randomIndex];
+    gameField[i][j] = value;
+  }
+};
+
+const draftField = (size, localField = []) => {
+  let field = '';
+  cells = size || cells;
+  gameField = localField.length
+    ? localField
+    : Array.from({ length: cells }, () => Array(cells).fill(0));
+
+  for (let i = 1; i <= cells; i++) {
+    const td = '<td class="field-cell"></td>'.repeat(cells);
+    field += `<tr class="field-row">${td}</tr>`;
+  }
+
+  tbody.innerHTML = field;
+};
+
+const updateScore = (points) => {
+  if (points === 0) {
+    score = points;
+    gameScore.innerHTML = score;
+
     return;
   }
 
-  const index = Math.floor(Math.random() * emptySquares.length);
-  const randomSquare = emptySquares[index];
-  const value = Math.random() > 0.9 ? 4 : 2;
+  score += points;
+  gameScore.innerHTML = score;
+};
 
-  setCellValue(randomSquare, value);
-}
+const updateRecord = (score) => {
+  if (score > recordScore) {
+    recordScore = score;
+    setLocalStorage(gameField, score, recordScore);
+    bestScore.innerHTML = recordScore;
+  }
 
-function setColumn(filtered) {
-  return filtered.map(cell => parseInt(cell.innerHTML, 10) || '');
-}
+  return recordScore;
+};
 
-function setCellValue(cell, value) {
-  cell.innerHTML = value || '';
-  cell.className = 'field-cell' + (value ? ` field-cell--${value}` : '');
-}
+const move = (direction) => {
+  canMove = [];
+  const isLeftOrUp = direction === 'left' || direction === 'up';
+  let steps = isLeftOrUp ? 0 : cells - 1;
+  let cell;
 
-function getNewRow(column, direction) {
-  const filtered = column.filter(num => num);
-  const missing = COLUMN_LENGTH - filtered.length;
-  const unfilled = Array(missing).fill('');
+  for (
+    let i = isLeftOrUp ? 0 : cells - 1;
+    isLeftOrUp ? i < cells : i >= 0;
+    isLeftOrUp ? i++ : i--
+  ) {
+    steps = 0;
 
-  return (
-    direction === directions.down || direction === directions.right
-      ? unfilled.concat(filtered)
-      : filtered.concat(unfilled)
+    for (
+      let j = isLeftOrUp ? 0 : cells - 1;
+      isLeftOrUp ? j < cells : j >= 0;
+      isLeftOrUp ? j++ : j--
+    ) {
+      if (direction === 'left' || direction === 'right') {
+        cell = gameField[i][j];
+      } else {
+        cell = gameField[j][i];
+      }
+
+      isLeftOrUp ? steps++ : steps--;
+
+      if (!cell) {
+        continue;
+      }
+
+      isLeftOrUp ? steps-- : steps++;
+      let k = 0;
+
+      if (direction === 'left' || direction == 'right') {
+        while (k <= cells - 1) {
+          if (gameField[i][j] && !gameField[i][j - steps]) {
+            gameField[i][j - steps] = gameField[i][j];
+            gameField[i][j] = 0;
+
+            canMove.push(true);
+
+            k = 0;
+          }
+
+          k++;
+        }
+      } else {
+        while (k <= cells - 1) {
+          if (gameField[j][i] && !gameField[j - steps][i]) {
+            gameField[j - steps][i] = gameField[j][i];
+            gameField[j][i] = 0;
+
+            canMove.push(true);
+
+            k = 0;
+          }
+
+          k++;
+        }
+      }
+    }
+  }
+};
+
+const combine = (direction) => {
+  let isCombined = false;
+  const combinedCells = Array.from({ length: cells }, () =>
+    Array(cells).fill(false)
   );
-}
+  const isLeftOrUp = direction === 'left' || direction === 'up';
 
-function checkMoveAndFinish() {
-  if (canMoveInAnyDirection.includes(true)) {
-    canMoveInAnyDirection = [];
-    appendNumber();
-  }
+  for (let i = 0; i < cells; i++) {
+    for (
+      let j = isLeftOrUp ? 1 : cells - 1;
+      isLeftOrUp ? j < cells : j > 0;
+      isLeftOrUp ? j++ : j--
+    ) {
+      if (direction === 'right' || direction === 'left') {
+        if (
+          gameField[i][j] === gameField[i][j - 1] &&
+          gameField[i][j] &&
+          gameField[i][j - 1] &&
+          !combinedCells[i][j] &&
+          !combinedCells[i][j - 1]
+        ) {
+          gameField[i][j - 1] *= 2;
+          gameField[i][j] = 0;
+          combinedCells[i][j] = true;
+          combinedCells[i][j - 1] = true;
+          updateScore(gameField[i][j - 1]);
 
-  checkIfGameFinished();
-}
+          isCombined = true;
+        }
+      } else {
+        if (
+          gameField[j][i] === gameField[j - 1][i] &&
+          gameField[j][i] &&
+          gameField[j - 1][i] &&
+          !combinedCells[j][i] &&
+          !combinedCells[j - 1][i]
+        ) {
+          gameField[j - 1][i] *= 2;
+          gameField[j][i] = 0;
+          combinedCells[j][i] = true;
+          combinedCells[j - 1][i] = true;
+          updateScore(gameField[j - 1][i]);
 
-function moveDown() {
-  for (let i = 0; i < everyRow.length; i++) {
-    const filteredColumn = everySquare.filter(td => td.cellIndex === i);
-
-    moveAndCombine(directions.down, filteredColumn);
-  };
-
-  checkMoveAndFinish();
-}
-
-function moveUp() {
-  for (let i = 0; i < everyRow.length; i++) {
-    const filteredColumn = everySquare.filter(td => td.cellIndex === i);
-
-    moveAndCombine(directions.up, filteredColumn);
-  };
-
-  checkMoveAndFinish();
-}
-
-function moveRight() {
-  for (let i = 0; i < everyRow.length; i++) {
-    const filteredColumn = everyRow.filter(tr => tr.rowIndex === i)[0].cells;
-
-    moveAndCombine(directions.right, filteredColumn);
-  };
-
-  checkMoveAndFinish();
-}
-
-function moveLeft() {
-  for (let i = 0; i < everyRow.length; i++) {
-    const filteredColumn = everyRow.filter(tr => tr.rowIndex === i)[0].cells;
-
-    moveAndCombine(directions.left, filteredColumn);
-  };
-
-  checkMoveAndFinish();
-}
-
-function moveAndCombine(direction, filteredColumn) {
-  const column = setColumn([...filteredColumn]);
-  const newRow = getNewRow(column, direction);
-
-  if (canMove(direction, column)) {
-    move(filteredColumn, newRow);
-    combine(direction, newRow, filteredColumn);
-  }
-}
-
-function combine(direction, row, collection) {
-  if (direction === directions.left || direction === directions.up) {
-    for (let k = 1; k < row.length; k++) {
-      const prev = row[k - offset.one];
-      const total = row[k] + prev;
-      const hasPairs = (
-        row[k] === prev
-        && prev !== ''
-        && row[k + offset.one]
-        && row[k + offset.two]
-        && row[k + offset.one] === row[k + offset.two]
-      );
-
-      if (hasPairs) {
-        row[k - offset.one] = total;
-        row[k] = row[k + offset.one] + row[k + offset.two];
-        row[k + offset.one] = '';
-        row[k + offset.two] = '';
-
-        updateScore(total + row[k]);
-
-        setCellValue(collection[k - offset.one], total);
-        setCellValue(collection[k], row[k]);
-        setCellValue(collection[k + offset.one], row[k + offset.one]);
-        setCellValue(collection[k + offset.two], row[k + offset.two]);
-
-        break;
-      }
-
-      if (row[k] === prev && row[k]) {
-        row[k - offset.one] = total;
-        row[k] = '';
-
-        updateScore(total);
-
-        setCellValue(collection[k - offset.one], total);
-        setCellValue(collection[k], row[k]);
-      }
-
-      if (row[k] && prev === '') {
-        row[k - offset.one] = row[k];
-        row[k] = '';
-
-        setCellValue(collection[k - offset.one], row[k - offset.one]);
-        setCellValue(collection[k], row[k]);
+          isCombined = true;
+        }
       }
     }
   }
 
-  if (direction === directions.right || direction === directions.down) {
-    for (let k = row.length - 1; k > 0; k--) {
-      const prev = row[k - offset.one];
-      const total = row[k] + prev;
-      const hasPairs = (
-        row[k] === prev
-        && prev !== ''
-        && row[k - offset.two]
-        && row[k - offset.three]
-        && row[k - offset.two] === row[k - offset.three]
-      );
+  return isCombined;
+};
 
-      if (hasPairs) {
-        row[k] = total;
-        row[k - offset.one] = row[k - offset.two] + row[k - offset.three];
-        row[k - offset.two] = '';
-        row[k - offset.three] = '';
+const moveAndCombine = (direction) => {
+  move(direction);
+  const isCombined = combine(direction);
 
-        updateScore(total + row[k]);
-
-        setCellValue(collection[k], total);
-        setCellValue(collection[k - offset.one], row[k - offset.one]);
-        setCellValue(collection[k - offset.two], '');
-        setCellValue(collection[k - offset.three], '');
-
-        break;
-      }
-
-      if (row[k] === prev && prev) {
-        row[k - offset.one] = '';
-        row[k] = total;
-
-        updateScore(total);
-
-        setCellValue(collection[k], total);
-        setCellValue(collection[k - offset.one], '');
-      }
-
-      if (prev && row[k] === '') {
-        row[k] = row[k - offset.one];
-        row[k - offset.one] = '';
-
-        setCellValue(collection[k], row[k]);
-        setCellValue(collection[k - offset.one], '');
-      }
-    }
-  }
-}
-
-function markMovementPossible() {
-  canMoveInAnyDirection.push(true);
-
-  return true;
-}
-
-function move(filteredColumn, row) {
-  for (let j = 0; j < filteredColumn.length; j++) {
-    setCellValue(filteredColumn[j], row[j]);
-  }
-}
-
-function canMove(direction, column) {
-  if (direction === directions.left || direction === directions.up) {
-    for (let j = 1; j < column.length; j++) {
-      const emptyString = column.find(col => col === '');
-      const curr = column[j];
-      const prev = column[j - offset.one];
-
-      if (prev === emptyString && curr) {
-        return markMovementPossible();
-      }
-
-      if (column[0] === '' && curr) {
-        return markMovementPossible();
-      }
-
-      if ((curr && prev) && (curr === prev)) {
-        return markMovementPossible();
-      }
-    }
+  if (isCombined) {
+    move(direction);
   }
 
-  if (direction === directions.right || direction === directions.down) {
-    for (let j = column.length - 1; j > 0; j--) {
-      const emptyString = column.find(col => col === '');
-      const curr = column[j];
-      const prev = column[j - offset.one];
-
-      if (curr === emptyString && prev) {
-        return markMovementPossible();
-      }
-
-      if (column[column.length - 1] === '' && curr) {
-        return markMovementPossible();
-      }
-
-      if ((curr && prev) && (curr === prev)) {
-        return markMovementPossible();
-      }
-    }
+  if (canMove.includes(true) || isCombined) {
+    appendNum();
   }
 
-  return false;
-}
+  render();
 
-function checkIfGameFinished() {
-  const cells = Array.from(document.querySelectorAll('td'));
-  const isWon = cells.find(cell => cell.innerHTML.includes('2048'));
+  setLocalStorage(gameField, score, updateRecord(score));
+
+  if (checkIfGameFinished()) {
+    console.log('game is over');
+  }
+};
+
+const checkIfGameFinished = () => {
+  const isWon = gameField.flat().includes(2048);
 
   if (isWon) {
     document.querySelector('.message-win').classList.remove('hidden');
 
-    return;
+    return true;
   }
 
-  let gameOver = true;
-
-  for (let i = 0; i < cells.length; i++) {
-    const currCell = cells[i];
-    const rightCell = cells[i + offset.one];
-    const bottomCell = cells[i + offset.four];
-    const isGameOver = !currCell.innerHTML || (
-      rightCell && currCell.cellIndex !== 3
-      && currCell.innerHTML === rightCell.innerHTML
-    ) || (bottomCell && currCell.innerHTML === bottomCell.innerHTML);
-
-    if (isGameOver) {
-      gameOver = false;
-      break;
+  for (let i = 0; i < gameField.length; i++) {
+    for (let j = 0; j < gameField[i].length; j++) {
+      if (!gameField[i][j]) {
+        return false;
+      }
     }
   }
 
-  if (gameOver) {
-    document.querySelector('.message-lose').classList.remove('hidden');
+  for (let i = 0; i < cells; i++) {
+    for (let j = 0; j < cells - 1; j++) {
+      if (
+        gameField[i][j] === gameField[i][j + 1] ||
+        gameField[j][i] === gameField[j + 1][i]
+      ) {
+        return false;
+      }
+    }
   }
-}
 
-function updateScore(value) {
-  score += value;
-  gameScore.innerHTML = score;
-}
+  document.querySelector('.message-lose').classList.remove('hidden');
 
-function restart() {
-  Array.from(document.querySelectorAll('td')).forEach(cell => {
-    setCellValue(cell, '');
-  });
+  return true;
+};
 
-  score = 0;
+draftField();
 
-  updateScore(score);
-  appendNumber();
-  appendNumber();
-}
+const initializeGame = (size) => {
+  const [localField = [], localScore = 0, localRecord = 0] = getLocalStorage();
+  const isContainsCells = localField.flat().filter((el) => el).length;
 
-mainButton.addEventListener('click', (e) => {
-  const { target } = e;
-
-  document.querySelector('.message-start').classList.add('hidden');
-  document.querySelector('.message-win').classList.add('hidden');
-  document.querySelector('.message-lose').classList.add('hidden');
-
-  target.classList.remove('start');
-  target.classList.add('restart');
-  target.innerHTML = 'Restart';
-
-  if (target.classList.contains('restart')) {
-    restart();
+  if (localField.length && isContainsCells) {
+    draftField(size, localField);
+    score = localScore;
+    gameScore.innerHTML = score;
+  } else {
+    draftField(size);
+    appendNum();
+    appendNum();
   }
-});
 
-document.addEventListener('keyup', (e) => {
-  switch (e.key) {
-    case 'ArrowDown':
-      moveDown();
-      break;
+  bestScore.innerHTML = localRecord;
 
-    case 'ArrowUp':
-      moveUp();
-      break;
+  render();
+};
 
-    case 'ArrowRight':
-      moveRight();
-      break;
-
-    case 'ArrowLeft':
-      moveLeft();
-      break;
-
-    default:
-      break;
-  }
-});
-
-document.addEventListener('touchstart', handleTouchStart, false);
-document.addEventListener('touchmove', handleTouchMove, false);
-
-function handleTouchStart(e) {
+const handleTouchStart = (e) => {
   touchStartX = e.touches[0].clientX;
   touchStartY = e.touches[0].clientY;
-}
+};
 
-function handleTouchMove(e) {
+const handleTouchMove = (e) => {
   if (!touchStartX || !touchStartY) {
     return;
   }
@@ -371,9 +321,101 @@ function handleTouchMove(e) {
   const deltaY = touchEndY - touchStartY;
 
   Math.abs(deltaX) > Math.abs(deltaY)
-    ? deltaX > 0 ? moveRight() : moveLeft()
-    : deltaY > 0 ? moveDown() : moveUp();
+    ? deltaX > 0
+      ? moveAndCombine('right')
+      : moveAndCombine('left')
+    : deltaY > 0
+    ? moveAndCombine('up')
+    : moveAndCombine('down');
 
   touchStartX = 0;
   touchStartY = 0;
-}
+};
+
+document.addEventListener('touchstart', handleTouchStart, false);
+document.addEventListener('touchmove', handleTouchMove, false);
+
+mainButton.addEventListener('click', (e) => {
+  const { target } = e;
+
+  if (target.classList.contains('restart')) {
+    setLocalStorage([], 0, updateRecord(recordScore));
+    score = 0;
+    gameScore.innerHTML = score;
+  }
+
+  initializeGame();
+
+  messageStart.classList.add('hidden');
+  messageWin.classList.add('hidden');
+  messageLose.classList.add('hidden');
+
+  target.classList.remove('start');
+  target.classList.add('restart');
+  target.innerHTML = 'Restart';
+});
+
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'ArrowDown') {
+    moveAndCombine('down');
+  } else if (e.key === 'ArrowUp') {
+    moveAndCombine('up');
+  } else if (e.key === 'ArrowRight') {
+    moveAndCombine('right');
+  } else if (e.key === 'ArrowLeft') {
+    moveAndCombine('left');
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (
+    (wrapper.classList.contains('dropdown--open') &&
+      !e.target.contains(dropdownValue)) ||
+    (e.target.id === 'header' && wrapper.classList.contains('dropdown--open'))
+  ) {
+    wrapper.classList.toggle('dropdown--open');
+  }
+});
+
+wrapper.addEventListener('click', (e) => {
+  console.dir(e.target);
+  if (!e.currentTarget.contains(e.target)) {
+    wrapper.classList.toggle('dropdown--open');
+  }
+
+  if (wrapper.classList.contains('dropdown--open') && e.target !== wrapper) {
+    const targetText = e.target.innerHTML;
+    const selectedText = dropdownValue.innerHTML;
+    const targetValue = parseInt(e.target.attributes[1].value, 10);
+    const selectedValue = parseInt(dropdownValue.attributes[1].value, 10);
+
+    if (targetValue === cells) {
+      wrapper.classList.toggle('dropdown--open');
+
+      return;
+    }
+
+    dropdownValue.innerHTML = targetText;
+    e.target.innerHTML = selectedText;
+
+    e.target.setAttribute('data-value', selectedValue);
+    dropdownValue.setAttribute('data-value', targetValue);
+
+    draftField(targetValue);
+
+    const [, , localRecord] = getLocalStorage();
+
+    recordScore = localRecord;
+    bestScore.innerHTML = localRecord;
+
+    messageStart.classList.remove('hidden');
+    mainButton.classList.add('start');
+    mainButton.classList.remove('restart');
+    mainButton.innerHTML = 'Start';
+    messageWin.classList.add('hidden');
+    messageLose.classList.add('hidden');
+    updateScore(0);
+  }
+
+  wrapper.classList.toggle('dropdown--open');
+});
