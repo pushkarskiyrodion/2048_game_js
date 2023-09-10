@@ -18,8 +18,8 @@ let score = 0;
 let canMove = [];
 let gameField = [];
 let recordScore = 0;
-let isNewCell = []
-let isCombinedCell = []
+let isNewCell = [];
+let isCombinedCell = [];
 let touchStartX = 0;
 let touchStartY = 0;
 
@@ -54,11 +54,14 @@ const render = () => {
       const prevClassName = cell.className;
 
       cell.innerHTML = value || '';
-      cell.className = (
-        'field-cell' + (value ? ` field-cell--${value}` : '')
-      )
-      
+      cell.className = 'field-cell' + (value ? ` field-cell--${value}` : '');
+
       if (isCombinedCell[i][j] && !isNewCell[i][j] && value && cell.innerHTML) {
+        if (prevClassName.includes('field-cell--combine')) {
+          cell.classList.remove('field-cell--combine');
+          void cell.offsetWidth;
+          cell.classList.add('field-cell--combine');
+        }
         cell.classList.add('field-cell--combine');
       } else {
         cell.classList.remove('field-cell--combine');
@@ -66,7 +69,9 @@ const render = () => {
 
       if (isNewCell[i][j] && value) {
         if (prevClassName.includes('field-cell--appear')) {
-          cell.classList.add('field-cell--new')
+          cell.classList.remove('field-cell--appear');
+          void cell.offsetWidth;
+          cell.classList.add('field-cell--appear');
         } else {
           cell.classList.add('field-cell--appear');
         }
@@ -100,6 +105,10 @@ const appendNum = () => {
 const draftField = (size, localField = []) => {
   let field = '';
   cells = size || cells;
+  isNewCell = Array.from({ length: cells }, () => Array(cells).fill(false));
+  isCombinedCell = Array.from({ length: cells }, () =>
+    Array(cells).fill(false)
+  );
   gameField = localField.length
     ? localField
     : Array.from({ length: cells }, () => Array(cells).fill(0));
@@ -269,7 +278,7 @@ const moveAndCombine = (direction) => {
 
   setLocalStorage(gameField, score, updateRecord(score));
 
-  checkIfGameFinished()
+  checkIfGameFinished();
 };
 
 const checkIfGameFinished = () => {
@@ -320,9 +329,6 @@ const initializeGame = (size) => {
     appendNum();
     appendNum();
   }
-
-  isNewCell = Array.from({ length: cells }, () => Array(cells).fill(false));
-  isCombinedCell = Array.from({ length: cells }, () => Array(cells).fill(false));
 
   bestScore.innerHTML = localRecord;
 
