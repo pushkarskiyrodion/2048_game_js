@@ -74,9 +74,16 @@
   text-align: center;
   vertical-align: center;
   user-select: none;
+  transition: transform 0.3s ease-in-out;
 }
-.field-cell--am {
-  animation: showUp 0.6s ease-out;
+.field-cell--appear {
+  animation: appear 0.2s ease-in-out backwards;
+}
+.field-cell--combine {
+  animation: combine 0.3s ease-out backwards;
+}
+.field-cell--new {
+  animation: appear-1 0.2s ease-in-out backwards;
 }
 .field-cell--2 {
   background: #eee4da;
@@ -137,12 +144,35 @@
   color: var(--white-color);
 }
 
-@keyframes showUp {
-  from {
-    opacity: 0.65;
+@keyframes appear {
+  0% {
+    transform: scale(0);
+    opacity: 0;
   }
-  to {
+  100% {
+    transform: scale(1);
     opacity: 1;
+  }
+}
+@keyframes appear-1 {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes combine {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 .help {

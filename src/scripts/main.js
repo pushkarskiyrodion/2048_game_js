@@ -14,12 +14,14 @@ const messageLose = document.querySelector('.message-lose');
 const bestScore = document.querySelector('.score__best');
 
 let cells = 4;
+let score = 0;
+let canMove = [];
 let gameField = [];
 let recordScore = 0;
-let score = 0;
+let isNewCell = []
+let isCombinedCell = []
 let touchStartX = 0;
 let touchStartY = 0;
-let canMove = [];
 
 const getLocalStorage = () => {
   const localField = JSON.parse(localStorage.getItem(`size ${cells}x${cells}`));
@@ -33,10 +35,10 @@ const getLocalStorage = () => {
   return localField;
 };
 
-const setLocalStorage = (field, points, record) => {
+const setLocalStorage = (field, points, best) => {
   localStorage.setItem(
     `size ${cells}x${cells}`,
-    JSON.stringify([field, points, record])
+    JSON.stringify([field, points, best])
   );
 };
 
@@ -44,16 +46,33 @@ const [, , localRecord = 0] = getLocalStorage();
 recordScore = localRecord;
 bestScore.innerHTML = localRecord;
 
-const setCellValue = (cell, value) => {
-  cell.innerHTML = value || '';
-  cell.className =
-    'field-cell' + (value ? ` field-cell--am field-cell--${value}` : '');
-};
-
 const render = () => {
   for (let i = 0; i < cells; i++) {
     for (let j = 0; j < cells; j++) {
-      setCellValue(tbody.children[i].children[j], gameField[i][j]);
+      const cell = tbody.children[i].children[j];
+      const value = gameField[i][j];
+      const prevClassName = cell.className;
+
+      cell.innerHTML = value || '';
+      cell.className = (
+        'field-cell' + (value ? ` field-cell--${value}` : '')
+      )
+      
+      if (isCombinedCell[i][j] && !isNewCell[i][j] && value && cell.innerHTML) {
+        cell.classList.add('field-cell--combine');
+      } else {
+        cell.classList.remove('field-cell--combine');
+      }
+
+      if (isNewCell[i][j] && value) {
+        if (prevClassName.includes('field-cell--appear')) {
+          cell.classList.add('field-cell--new')
+        } else {
+          cell.classList.add('field-cell--appear');
+        }
+      } else {
+        cell.classList.remove('field-cell--appear');
+      }
     }
   }
 };
@@ -73,6 +92,7 @@ const appendNum = () => {
   if (falseIndices.length > 0) {
     const randomIndex = Math.floor(Math.random() * falseIndices.length);
     const [i, j] = falseIndices[randomIndex];
+    isNewCell[i][j] = true;
     gameField[i][j] = value;
   }
 };
@@ -116,6 +136,7 @@ const updateRecord = (score) => {
 
 const move = (direction) => {
   canMove = [];
+  isNewCell = Array.from({ length: cells }, () => Array(cells).fill(false));
   const isLeftOrUp = direction === 'left' || direction === 'up';
   let steps = isLeftOrUp ? 0 : cells - 1;
   let cell;
@@ -180,7 +201,7 @@ const move = (direction) => {
 
 const combine = (direction) => {
   let isCombined = false;
-  const combinedCells = Array.from({ length: cells }, () =>
+  isCombinedCell = Array.from({ length: cells }, () =>
     Array(cells).fill(false)
   );
   const isLeftOrUp = direction === 'left' || direction === 'up';
@@ -196,13 +217,14 @@ const combine = (direction) => {
           gameField[i][j] === gameField[i][j - 1] &&
           gameField[i][j] &&
           gameField[i][j - 1] &&
-          !combinedCells[i][j] &&
-          !combinedCells[i][j - 1]
+          !isCombinedCell[i][j] &&
+          !isCombinedCell[i][j - 1]
         ) {
           gameField[i][j - 1] *= 2;
           gameField[i][j] = 0;
-          combinedCells[i][j] = true;
-          combinedCells[i][j - 1] = true;
+          isNewCell[i][j] = true;
+          isCombinedCell[i][j] = true;
+          isCombinedCell[i][j - 1] = true;
           updateScore(gameField[i][j - 1]);
 
           isCombined = true;
@@ -212,13 +234,14 @@ const combine = (direction) => {
           gameField[j][i] === gameField[j - 1][i] &&
           gameField[j][i] &&
           gameField[j - 1][i] &&
-          !combinedCells[j][i] &&
-          !combinedCells[j - 1][i]
+          !isCombinedCell[j][i] &&
+          !isCombinedCell[j - 1][i]
         ) {
           gameField[j - 1][i] *= 2;
           gameField[j][i] = 0;
-          combinedCells[j][i] = true;
-          combinedCells[j - 1][i] = true;
+          isCombinedCell[j][i] = true;
+          isNewCell[j][i] = true;
+          isCombinedCell[j - 1][i] = true;
           updateScore(gameField[j - 1][i]);
 
           isCombined = true;
@@ -246,9 +269,7 @@ const moveAndCombine = (direction) => {
 
   setLocalStorage(gameField, score, updateRecord(score));
 
-  if (checkIfGameFinished()) {
-    console.log('game is over');
-  }
+  checkIfGameFinished()
 };
 
 const checkIfGameFinished = () => {
@@ -300,6 +321,9 @@ const initializeGame = (size) => {
     appendNum();
   }
 
+  isNewCell = Array.from({ length: cells }, () => Array(cells).fill(false));
+  isCombinedCell = Array.from({ length: cells }, () => Array(cells).fill(false));
+
   bestScore.innerHTML = localRecord;
 
   render();
@@ -325,8 +349,8 @@ const handleTouchMove = (e) => {
       ? moveAndCombine('right')
       : moveAndCombine('left')
     : deltaY > 0
-    ? moveAndCombine('up')
-    : moveAndCombine('down');
+      ? moveAndCombine('up')
+      : moveAndCombine('down');
 
   touchStartX = 0;
   touchStartY = 0;
@@ -378,7 +402,6 @@ document.addEventListener('click', (e) => {
 });
 
 wrapper.addEventListener('click', (e) => {
-  console.dir(e.target);
   if (!e.currentTarget.contains(e.target)) {
     wrapper.classList.toggle('dropdown--open');
   }
