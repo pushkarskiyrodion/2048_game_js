@@ -1,0 +1,163 @@
+.tile {
+  position: absolute;
+  z-index: 2;
+
+  &,
+  .tile-inner {
+    min-width: $cellWidth;
+    min-height: $cellWidth;
+    text-align: center;
+    line-height: $cellWidth;
+    transition: transform 0.1s ease-in-out;
+    user-select: none;
+    border-radius: 5px;
+  }
+
+  &-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  &--2 {
+    background: #eee4da;
+    color: #776e65;
+  }
+
+  &--4 {
+    background: #ede0c8;
+    color: #776e65;
+  }
+
+  &--8 {
+    background: #f2b179;
+  }
+
+  &--16 {
+    background: #f59563;
+  }
+
+  &--32 {
+    background: #f67c5f;
+  }
+
+  &--64 {
+    background: #f65e3b;
+  }
+
+  &--128 {
+    background: #edcf72;
+  }
+
+  &--256 {
+    background: #edcc61;
+  }
+
+  &--512 {
+    background: #edc850;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+  }
+
+  &--1024 {
+    background: #edc53f;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+  }
+
+  &--2048 {
+    background: #edc22e;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+  }
+
+  &--4096 {
+    background: #ecbf2c;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+  }
+
+  &--8192 {
+    background: #eabd29;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+  }
+
+  &--16384 {
+    background: #e4b723;
+    font-size: 24px;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+  }
+
+  &--32768 {
+    background: #ecbd22;
+    font-size: 24px;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+  }
+
+  &--65536 {
+    background: #e8b91f;
+    font-size: 24px;
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+  }
+
+  @for $x from 1 through 7 {
+    @for $y from 1 through 7 {
+      &.tile-position-#{$x}-#{$y} {
+        $xPos: $spacing + ($cellWidth + $spacing) * ($x - 1);
+        $yPos: $spacing + ($cellWidth + $spacing) * ($y - 1);
+        @include transform(translate($xPos, $yPos));
+      }
+    }
+  }
+
+  &--appear {
+    z-index: 5;
+    animation: appear 0.25s ease 0.1s backwards;
+  }
+
+  &--combine {
+    z-index: 5;
+    animation: combine 0.25s ease 0.1s backwards;
+  }
+
+  &--fade-out {
+    animation: fade-out 0.25s ease 0.1s backwards;
+  }
+}
+
+@include keyframes(appear) {
+  0% {
+    opacity: 0;
+    @include transform(scale(0));
+  }
+  100% {
+    opacity: 1;
+    @include transform(scale(1));
+  }
+}
+
+@include keyframes(combine) {
+  0% {
+    @include transform(scale(1));
+  }
+  50% {
+    @include transform(scale(1.15));
+  }
+  100% {
+    @include transform(scale(1));
+  }
+}
+
+@include keyframes(fade-out) {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@include keyframes(fade-in) {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

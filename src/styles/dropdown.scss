@@ -1,6 +1,7 @@
 .dropdown {
-  margin-right: 8px;
-  width: 75px;
+  width: $dropdownWidth;
+  position: relative;
+  z-index: 3;
 
   @media (max-width: 750px) {
     & {
@@ -16,8 +17,8 @@
     margin-bottom: 8px;
     border-radius: 5px;
 
-    width: 75px;
-    height: 75px;
+    width: $dropdownWidth;
+    height: $dropdownWidth;
     background-color: #133dba;
     transition: background-color 0.25s ease;
     cursor: pointer;
@@ -32,7 +33,7 @@
     align-items: center;
     justify-content: center;
     background-color: #133dba;
-    height: 75px;
+    height: $dropdownWidth;
     border-radius: 5px;
     margin-bottom: 3px;
     cursor: pointer;
@@ -45,14 +46,14 @@
 
   &-wrapper {
     position: absolute;
-    width: 75px;
-    height: 75px;
+    width: $dropdownWidth;
+    height: $dropdownWidth;
     overflow: hidden;
-    color: var(--white-color);
+    // color: $textColor;
     transition: height 0.2s ease-in-out;
   }
 
   &--open {
-    height: 392px;
+    height: 317px;
   }
 }

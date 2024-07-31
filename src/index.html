@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2048</title>
+    <title>Merge it</title>
     <link
       rel="icon"
       type="image/x-icon"
@@ -11,77 +11,75 @@
     />
   </head>
   <body>
-    <main>
-      <div class="game-header" id="header">
-        <div class="controls">
-          <div class="dropdown">
-            <div class="dropdown-wrapper">
-              <div class="dropdown-value" data-value="4">4x4</div>
-              <div class="dropdown-item" data-value="5">5x5</div>
-              <div class="dropdown-item" data-value="6">6x6</div>
-              <div class="dropdown-item" data-value="7">7x7</div>
-            </div>
-          </div>
-
-          <h1 class="main-title">2048</h1>
-        </div>
-
-        <div class="controls">
-          <p class="info best">
-            Best: <span class="score score__best">0</span>
-          </p>
-
-          <p class="info">Score: <span class="score game-score">0</span></p>
-
-          <button class="button start">Start</button>
+    <header class="game-header">
+      <div class="game-header-wrapper">
+        <div class="dropdown"></div>
+        <div class="game-top">
+          <div class="game-title">Merge it</div>
+          <button class="game-start">New Game</button>
         </div>
       </div>
 
-      <div class="container">
-        <table class="game-field">
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <div class="message-container">
-        <div class="help-text hidden">
-          <h2 class="help-title">How to play</h2>
-
-          <ul class="help-list">
-            <li class="help-item">
-              You can move all tiles on the board in four directions: up, down,
-              left, and right using arrow keys.
-            </li>
-
-            <li class="help-item">
-              When two tiles with the same number collide after a move, they
-              merge into a single tile with the sum of their values. For
-              example, if two "2" tiles collide, they become a single "4" tile.
-            </li>
-
-            <li class="help-item">
-              The goal of the game is to create a tile with the number 2048.
-            </li>
-
-            <li class="help-item">
-              After each move, a new tile with a value of "2" or "4" appears
-              randomly on an empty spot on the board
-            </li>
-
-            <li class="help-item">
-              The game ends when the board is full, and no more moves are
-              possible, or when you achieve a tile with the value of 2048.
-            </li>
-          </ul>
+      <div class="game-header-wrapper">
+        <div class="game-scores-container game-scores">
+          -
+          <div class="game-scores--addition"></div>
         </div>
 
-        <div class="help"></div>
-
-        <p class="message message-lose hidden">You lose! Restart the game?</p>
-        <p class="message message-win hidden">Winner! Congrats! You did it!</p>
-        <p class="message message-start">Press "Start" to begin game. Good luck!</p>
+        <div class="game-scores-container game-scores-best">-</div>
       </div>
-    </main>
-    <script type="text/javascript" src="scripts/main.js"></script>
+    </header>
+
+    <div class="game-container">
+      <div class="game-field"></div>
+      <div class="game-message hidden">
+        <div class="game-message-status"></div>
+        <div class="game-message-lower">
+          <button class="game-message-keep-playing">Keep playing</button>
+          <button class="game-message-retry">Try again</button>
+        </div>
+      </div>
+      <div class="tile-container"></div>
+    </div>
+
+    <div class="game-footer">
+      <div class="help-text hidden">
+        <h2 class="help-title">How to play</h2>
+
+        <ul class="help-list">
+          <li class="help-item">
+            Choose a size of field by clicking the blue button and selecting from the list.
+          </li>
+
+          <li class="help-item">
+            You can move all tiles on the board in four directions: up, down,
+            left, and right using arrow keys.
+          </li>
+
+          <li class="help-item">
+            When two tiles with the same number collide after a move, they
+            merge into a single tile with the sum of their values. For
+            example, if two "2" tiles collide, they become a single "4" tile.
+          </li>
+
+          <li class="help-item">
+            The goal of the game is to create a tile with the number 2048.
+          </li>
+
+          <li class="help-item">
+            After each move, a new tile with a value of "2" or "4" appears
+            randomly on an empty spot on the board
+          </li>
+
+          <li class="help-item">
+            The game ends when the board is full, and no more moves are
+            possible, or when you achieve a tile with the value of 2048.
+          </li>
+        </ul>
+      </div>
+
+      <div class="help"></div>
+    </div>
+    <script type="text/javascript" src="./index.js"></script>
   </body>
 </html>

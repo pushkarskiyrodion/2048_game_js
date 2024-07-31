@@ -1,0 +1,190 @@
+.game {
+  &-field {
+    background: #bbada0;
+    padding: $spacing;
+    border-radius: 5px;
+    margin: auto;
+  }
+
+  &-title {
+    // background-color: #edc22e;
+    text-align: center;
+    border-radius: 3px;
+    padding: 5px 20px;
+    font-size: 18px;
+    margin-bottom: 4px;
+    color: #776e65;
+  }
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 10px 0;
+
+    &-wrapper {
+      display: flex;
+      gap: 8px;
+    }
+  }
+
+  &-container {
+    position: relative;
+    margin: auto;
+  }
+
+  &-footer {
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-row {
+    display: flex;
+
+    &:not(:last-child) {
+      margin-bottom: $spacing;
+    }
+  }
+
+  &-cell {
+    width: $cellWidth;
+    height: $cellWidth;
+    border-radius: 5px;
+    // background: #d6cdc4;
+    color: #776e65;
+    background-color: rgba(238, 228, 218, .35);
+
+    &:not(:last-child) {
+      margin-right: $spacing;
+    }
+  }
+
+  &-scores {
+    position: relative;
+
+    &::before, &-best::before {
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      color: #eee4da;
+    }
+
+    &::before {
+      content: "Scores";
+    }
+
+    &-best {
+      &::before {
+        content: "Best";
+      }
+    }
+
+    &--addition {
+      position: absolute;
+      top: -25px;
+      left: 10px;
+      // color: rgba(119, 110, 101, .9);
+      @include animation(move-up 0.6s ease-in)
+    }
+
+    &-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 110px;
+      border-radius: 5px;
+      background-color: #797168;
+      font-size: 16px;
+      font-weight: 400;
+      // background-color: #bbada0;
+    }
+  }
+
+  &-message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 20;
+
+    &-lower {
+      display: flex;
+
+      & > button {
+        display: block;
+        background: #8f7a66;
+        border-radius: 3px;
+        padding: 0 20px;
+        color: $textColor;
+        height: 40px;
+        line-height: 42px;
+        margin-left: 9px;
+        font-size: 18px;
+      }
+
+      & > .game-message-keep-playing {
+        display: none;
+      }
+    }
+
+    &-status {
+      color: #776e65;
+      font-size: 34px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    &--fade-out {
+      animation: fade-out 0.2s ease 0.1s backwards;
+    }
+
+    &--game-over {
+      display: flex;
+      background-color: rgba(238, 228, 218, .5);
+      z-index: 10;
+      @include animation(fade-in 800ms ease 1200ms both);
+    }
+
+    &--game-won {
+      display: flex;
+      background-color: rgba(237, 194, 46, .5);
+      color: $textColor;
+      @include animation(fade-in 800ms ease 1200ms both);
+    }
+  }
+
+  &-start {
+    display: block;
+    color: $textColor;
+    font-weight: 700;
+    // width: 110px;
+    transition: 0.25s ease background-color;
+    background-color: #34b956;
+    font-size: 18px;
+    background: #8f7a66;
+    padding: 5px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+  
+    &:hover {
+      background-color: #179921;
+    }
+  }
+}
+
+@include keyframes(move-up) {
+  0% {
+    opacity: 1;
+    top: 30px;
+  } 
+  100% {
+    opacity: 0;
+    bottom: 0;
+  }
+}
