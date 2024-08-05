@@ -172,7 +172,6 @@ export default class ActuateUI {
         }
 
         if (isCombined) {
-          debugger;
           if (value === 2048 && !this.metadata.isWon) {
             this.metadata.isWon = true;
             this.gameWinning();

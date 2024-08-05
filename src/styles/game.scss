@@ -7,7 +7,6 @@
   }
 
   &-title {
-    // background-color: #edc22e;
     text-align: center;
     border-radius: 3px;
     padding: 5px 20px;
@@ -51,7 +50,6 @@
     width: $cellWidth;
     height: $cellWidth;
     border-radius: 5px;
-    // background: #d6cdc4;
     color: #776e65;
     background-color: rgba(238, 228, 218, .35);
 
@@ -83,7 +81,6 @@
       position: absolute;
       top: -25px;
       left: 10px;
-      // color: rgba(119, 110, 101, .9);
       @include animation(move-up 0.6s ease-in)
     }
 
@@ -96,8 +93,6 @@
       border-radius: 5px;
       background-color: #797168;
       font-size: 16px;
-      font-weight: 400;
-      // background-color: #bbada0;
     }
   }
 
@@ -141,7 +136,7 @@
     }
 
     &--fade-out {
-      animation: fade-out 0.2s ease 0.1s backwards;
+      @include animation(fade-out 0.2s ease 0.1s backwards);
     }
 
     &--game-over {
@@ -163,9 +158,7 @@
     display: block;
     color: $textColor;
     font-weight: 700;
-    // width: 110px;
-    transition: 0.25s ease background-color;
-    background-color: #34b956;
+    transition: opacity 0.15s ease-in;
     font-size: 18px;
     background: #8f7a66;
     padding: 5px 20px;
@@ -173,7 +166,7 @@
     cursor: pointer;
   
     &:hover {
-      background-color: #179921;
+      opacity: 0.8;
     }
   }
 }

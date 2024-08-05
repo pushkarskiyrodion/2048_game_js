@@ -8,7 +8,7 @@
     min-height: $cellWidth;
     text-align: center;
     line-height: $cellWidth;
-    transition: transform 0.1s ease-in-out;
+    transition: transform 0.1s ease-out;
     user-select: none;
     border-radius: 5px;
   }
@@ -55,45 +55,45 @@
 
   &--512 {
     background: #edc850;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+    box-shadow: $tileBoxShadow;
   }
 
   &--1024 {
     background: #edc53f;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+    box-shadow: $tileBoxShadow;
   }
 
   &--2048 {
     background: #edc22e;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+    box-shadow: $tileBoxShadow;
   }
 
   &--4096 {
     background: #ecbf2c;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+    box-shadow: $tileBoxShadow;
   }
 
   &--8192 {
     background: #eabd29;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+    box-shadow: $tileBoxShadow;
   }
 
   &--16384 {
     background: #e4b723;
     font-size: 24px;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+    box-shadow: $tileBoxShadow;
   }
 
   &--32768 {
     background: #ecbd22;
     font-size: 24px;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+    box-shadow: $tileBoxShadow;
   }
 
   &--65536 {
     background: #e8b91f;
     font-size: 24px;
-    box-shadow: 0 0 30px 10px rgba(243, 215, 116, .47619), inset 0 0 0 1px rgba(255, 255, 255, .28571);
+    box-shadow: $tileBoxShadow;
   }
 
   @for $x from 1 through 7 {
@@ -108,16 +108,17 @@
 
   &--appear {
     z-index: 5;
-    animation: appear 0.25s ease 0.1s backwards;
+    @include animation(appear 0.25s ease 0.1s backwards);
   }
 
   &--combine {
     z-index: 5;
-    animation: combine 0.25s ease 0.1s backwards;
+    @include animation(combine 0.25s ease 0.1s backwards);
+
   }
 
   &--fade-out {
-    animation: fade-out 0.25s ease 0.1s backwards;
+    @include animation(fade-out 0.3s ease 0.1s backwards);
   }
 }
 

@@ -77,3 +77,11 @@ window.addEventListener('beforeunload', () => {
 document.querySelector('.game-message-retry').addEventListener('click', () => {
   startNewGame(grid.cells, true);
 })
+
+document.addEventListener('click', (e) => {
+  const dropdownWrapper = document.querySelector('.dropdown-wrapper');
+
+  if (!dropdownWrapper.contains(e.target) && dropdownWrapper.classList.contains('dropdown--open')) {
+    dropdownWrapper.classList.remove('dropdown--open')
+  }
+})

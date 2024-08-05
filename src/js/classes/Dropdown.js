@@ -36,14 +36,8 @@ export class Dropdown {
       </div>`;
 
     this.dropdownContainer.innerHTML = html;
-    const dropdownWrapper = document.querySelector('.dropdown-wrapper')
+    const dropdownWrapper = document.querySelector('.dropdown-wrapper');
 
-    // Attach event listeners
-    document.addEventListener('click', (e) => {
-      if (!dropdownWrapper.contains(e.target) && dropdownWrapper.classList.contains('dropdown--open')) {
-        dropdownWrapper.classList.remove('dropdown--open')
-      }
-    })
     dropdownWrapper.addEventListener('click', this.toggleDropdown.bind(this));
     this.dropdownContainer.querySelectorAll('.dropdown-item').forEach(item => {
       item.addEventListener('click', (event) => {
