@@ -77,7 +77,7 @@ export default class ActuateUI {
 
     gameMessage.classList.remove('hidden');
     gameStatus.innerHTML = 'Game Over!';
-    gameStatus.style.color = '#fff';
+    gameStatus.style.color = '#776e65';
     gameMessage.classList.add('game-message--game-over');
   }
 
